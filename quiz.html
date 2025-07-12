@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster Pro - Coding Quiz</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        #toastNotification {
+            font-size: 1.2em; /* Slightly larger text */
+            padding: 20px; /* Increase padding for a larger appearance */
+            width: 300px; /* Adjust width */
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <header class="quiz-header">
+            <div class="header-left">
+                <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+                <div class="website-name">
+                    <h2>QuizMaster Pro</h2>
+                </div>
+            </div>
+            <div class="user-info">
+                <span id="userName">Welcome!</span>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar" id="sidebar">
+                <h3>Choose Language</h3>
+                <div class="language-list">
+                    <div class="language-item" data-lang="java">
+                        <div class="lang-icon">☕</div>
+                        <span>Java</span>
+                    </div>
+                    <div class="language-item" data-lang="python">
+                        <div class="lang-icon">🐍</div>
+                        <span>Python</span>
+                    </div>
+                    <div class="language-item" data-lang="c">
+                        <div class="lang-icon">⚡</div>
+                        <span>C</span>
+                    </div>
+                    <div class="language-item" data-lang="cpp">
+                        <div class="lang-icon">🔧</div>
+                        <span>C++</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-main">
+                <div id="welcomeScreen" class="screen">
+                    <div class="welcome-content">
+                        <h1>Welcome to Coding Quiz</h1>
+                        <p>Select a programming language from the sidebar to begin your coding assessment.</p>
+                        <div class="features">
+                            <div class="feature">
+                                <div class="feature-icon">💻</div>
+                                <h3>Smart Code Editor</h3>
+                                <p>Auto-indentation and syntax-aware editing</p>
+                            </div>
+                            <div class="feature">
+                                <div class="feature-icon">⏱️</div>
+                                <h3>Timed Test</h3>
+                                <p>20 minutes to complete all questions</p>
+                            </div>
+                            <div class="feature">
+                                <div class="feature-icon">📊</div>
+                                <h3>Instant Results</h3>
+                                <p>Get detailed feedback on your performance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quizScreen" class="screen hidden">
+                    <div class="quiz-header-info">
+                        <div class="quiz-progress">
+                            <span id="questionCounter">Question 1 of 6</span>
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill"></div>
+                            </div>
+                        </div>
+                        <div class="timer-display">
+                            <span id="timer">20:00</span>
+                        </div>
+                    </div>
+
+                    <div class="question-container">
+                        <div id="codingQuestion" class="coding-question hidden">
+                            <h3 id="codingQuestionTitle">Coding Question</h3>
+                            <div id="codingQuestionText" class="question-text"></div>
+                            <div class="code-editor-container">
+                                <div class="editor-header">
+                                    <span id="languageName">Java</span>
+                                    <span class="editor-title">Smart Code Editor</span>
+                                </div>
+                                <div class="code-editor">
+                                    <div class="line-numbers" id="lineNumbers"></div>
+                                    <textarea id="codeEditor" placeholder="Write your code here..." spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mcqQuestion" class="mcq-question hidden">
+                            <h3 id="mcqQuestionTitle">Coding Question</h3>
+                            <div id="mcqQuestionText" class="question-text"></div>
+                            <div class="code-editor-container">
+                                <div class="editor-header">
+                                    <span id="mcqLanguageName">Java</span>
+                                    <span class="editor-title">Code Editor</span>
+                                </div>
+                                <div class="code-editor">
+                                    <div class="line-numbers" id="mcqLineNumbers"></div>
+                                    <textarea id="mcqCodeEditor" placeholder="Write your code here..." spellcheck="false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-controls">
+                        <button id="prevBtn" class="btn btn-secondary" disabled>Previous</button>
+                        <button id="nextBtn" class="btn btn-primary">Next</button>
+                        <button id="endTestBtn" class="btn btn-danger">End Test</button>
+                    </div>
+                </div>
+
+                <div id="resultsScreen" class="screen hidden">
+                    <div class="results-container">
+                        <button id="closeResultsBtn" class="close-btn">&times;</button>
+                        <h1>Quiz Complete!</h1>
+                        <div class="score-display">
+                            <div class="score-circle">
+                                <span id="finalScore">0</span>
+                                <span class="score-total">/ 6</span>
+                            </div>
+                        </div>
+                        <div class="score-breakdown">
+                            <div class="score-item">
+                                <span class="score-label">Coding Questions:</span>
+                                <span id="codingScore">0/6</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Total Time:</span>
+                                <span id="totalTime">00:00</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Accuracy:</span>
+                                <span id="accuracy">0%</span>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <button id="retakeQuizBtn" class="btn btn-primary">Take Another Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="familiarityModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Language Familiarity</h3>
+            <p>How familiar are you with <span id="selectedLanguage">Java</span>?</p>
+            <form id="familiarityForm">
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="familiarity" value="beginner" required>
+                        <span class="radio-custom"></span>
+                        <div class="radio-text">
+                            <strong>Beginner</strong>
+                            <small>Just starting out</small>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="familiarity" value="intermediate" required>
+                        <span class="radio-custom"></span>
+                        <div class="radio-text">
+                            <strong>Intermediate</strong>
+                            <small>Some experience</small>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="familiarity" value="advanced" required>
+                        <span class="radio-custom"></span>
+                        <div class="radio-text">
+                            <strong>Advanced</strong>
+                            <small>Very experienced</small>
+                        </div>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="quizDetailsOverlay" class="overlay hidden">
+        <div class="overlay-content">
+            <div class="quiz-details">
+                <h2>Quiz Details</h2>
+                <div class="detail-item">
+                    <span class="detail-icon">📝</span>
+                    <div>
+                        <strong>Total Questions: 6</strong>
+                        <small>All coding questions</small>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">⏰</span>
+                    <div>
+                        <strong>Time Limit: 20 minutes</strong>
+                        <small>Auto-submit when time expires</small>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">🎯</span>
+                    <div>
+                        <strong>Total Marks: 6</strong>
+                        <small>1 mark per question</small>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-icon">💻</span>
+                    <div>
+                        <strong>Language: <span id="quizLanguage">Java</span></strong>
+                        <small>Level: <span id="quizLevel">Intermediate</span></small>
+                    </div>
+                </div>
+            </div>
+            <button id="startQuizBtn" class="btn btn-primary btn-large">Start Quiz</button>
+        </div>
+    </div>
+
+    <div id="toastNotification" class="toast-notification hidden">
+        <span id="toastMessage">Welcome!</span>
+        <button id="toastClose" class="toast-close">&times;</button>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('userName').textContent = `Welcome, ${currentUser.name}!`;
+            showWelcomeToast(currentUser.name);
+        }
+
+        let selectedLanguage = '';
+        let selectedLevel = '';
+        let currentQuestion = 0;
+        let answers = {};
+        let timeLeft = 1200;
+        let timer;
+        let startTime;
+
+        const languageData = {
+            java: {
+                questions: [
+                    {
+                        title: "Array Sum Calculator",
+                        text: "Write a Java method that takes an array of integers and returns the sum of all even numbers in the array. If no even numbers are found, return 0.",
+                        template: `public class ArrayCalculator {
+    
+    public static int sumEvenNumbers(int[] numbers) {
+        
+    }
+    
+    public static void main(String[] args) {
+        int[] testArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int result = sumEvenNumbers(testArray);
+        System.out.println("Sum of even numbers: " + result);
+    }
+}`
+                    },
+                    {
+                        title: "String Reverser",
+                        text: "Write a Java method that reverses a given string without using built-in reverse methods.",
+                        template: `public class StringReverser {
+    
+    public static String reverseString(String input) {
+        
+    }
+    
+    public static void main(String[] args) {
+        String test = "Hello World";
+        String result = reverseString(test);
+        System.out.println("Original: " + test);
+        System.out.println("Reversed: " + result);
+    }
+}`
+                    },
+                    {
+                        title: "Prime Number Checker",
+                        text: "Write a Java method that checks if a given number is prime. A prime number is greater than 1 and has no positive divisors other than 1 and itself.",
+                        template: `public class PrimeChecker {
+    
+    public static boolean isPrime(int number) {
+        
+    }
+    
+    public static void main(String[] args) {
+        int testNumber = 17;
+        boolean result = isPrime(testNumber);
+        System.out.println(testNumber + " is prime: " + result);
+    }
+}`
+                    },
+                    {
+                        title: "Factorial Calculator",
+                        text: "Write a Java method that calculates the factorial of a given number using recursion.",
+                        template: `public class FactorialCalculator {
+    
+    public static long factorial(int n) {
+        
+    }
+    
+    public static void main(String[] args) {
+        int number = 5;
+        long result = factorial(number);
+        System.out.println("Factorial of " + number + " is: " + result);
+    }
+}`
+                    },
+                    {
+                        title: "Array Maximum Finder",
+                        text: "Write a Java method that finds the maximum element in an array of integers.",
+                        template: `public class ArrayMaxFinder {
+    
+    public static int findMaximum(int[] array) {
+        
+    }
+    
+    public static void main(String[] args) {
+        int[] numbers = {3, 7, 2, 9, 1, 8, 5};
+        int max = findMaximum(numbers);
+        System.out.println("Maximum element: " + max);
+    }
+}`
+                    },
+                    {
+                        title: "Palindrome Checker",
+                        text: "Write a Java method that checks if a given string is a palindrome (reads the same forwards and backwards), ignoring case and spaces.",
+                        template: `public class PalindromeChecker {
+    
+    public static boolean isPalindrome(String text) {
+        
+    }
+    
+    public static void main(String[] args) {
+        String test = "A man a plan a canal Panama";
+        boolean result = isPalindrome(test);
+        System.out.println("'" + test + "' is palindrome: " + result);
+    }
+}`
+                    }
+                ]
+            },
+            python: {
+                questions: [
+                    {
+                        title: "List Sum Calculator",
+                        text: "Write a Python function that takes a list of numbers and returns the sum of all even numbers. Return 0 if no even numbers are found.",
+                        template: `def sum_even_numbers(numbers):
+    pass
+
+if __name__ == "__main__":
+    test_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    result = sum_even_numbers(test_list)
+    print(f"Sum of even numbers: {result}")`
+                    },
+                    {
+                        title: "String Reverser",
+                        text: "Write a Python function that reverses a given string without using built-in reverse methods or slicing.",
+                        template: `def reverse_string(text):
+    pass
+
+if __name__ == "__main__":
+    test_string = "Hello World"
+    result = reverse_string(test_string)
+    print(f"Original: {test_string}")
+    print(f"Reversed: {result}")`
+                    },
+                    {
+                        title: "Prime Number Checker",
+                        text: "Write a Python function that checks if a given number is prime. A prime number is greater than 1 and has no positive divisors other than 1 and itself.",
+                        template: `def is_prime(number):
+    pass
+
+if __name__ == "__main__":
+    test_number = 17
+    result = is_prime(test_number)
+    print(f"{test_number} is prime: {result}")`
+                    },
+                    {
+                        title: "Factorial Calculator",
+                        text: "Write a Python function that calculates the factorial of a given number using recursion.",
+                        template: `def factorial(n):
+    pass
+
+if __name__ == "__main__":
+    number = 5
+    result = factorial(number)
+    print(f"Factorial of {number} is: {result}")`
+                    },
+                    {
+                        title: "List Maximum Finder",
+                        text: "Write a Python function that finds the maximum element in a list of numbers without using the built-in max() function.",
+                        template: `def find_maximum(numbers):
+    pass
+
+if __name__ == "__main__":
+    test_list = [3, 7, 2, 9, 1, 8, 5]
+    maximum = find_maximum(test_list)
+    print(f"Maximum element: {maximum}")`
+                    },
+                    {
+                        title: "Palindrome Checker",
+                        text: "Write a Python function that checks if a given string is a palindrome (reads the same forwards and backwards), ignoring case and spaces.",
+                        template: `def is_palindrome(text):
+    pass
+
+if __name__ == "__main__":
+    test_string = "A man a plan a canal Panama"
+    result = is_palindrome(test_string)
+    print(f"'{test_string}' is palindrome: {result}")`
+                    }
+                ]
+            },
+            c: {
+                questions: [
+                    {
+                        title: "Array Sum Calculator",
+                        text: "Write a C function that takes an array of integers and its size, then returns the sum of all even numbers in the array.",
+                        template: `#include <stdio.h>
+
+int sumEvenNumbers(int arr[], int size) {
+    
+}
+
+int main() {
+    int numbers[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int size = sizeof(numbers) / sizeof(numbers[0]);
+    int result = sumEvenNumbers(numbers, size);
+    printf("Sum of even numbers: %d\\n", result);
+    return 0;
+}`
+                    },
+                    {
+                        title: "String Reverser",
+                        text: "Write a C function that reverses a given string in place without using built-in string functions.",
+                        template: `#include <stdio.h>
+#include <string.h>
+
+void reverseString(char str[]) {
+    
+}
+
+int main() {
+    char text[] = "Hello World";
+    printf("Original: %s\\n", text);
+    reverseString(text);
+    printf("Reversed: %s\\n", text);
+    return 0;
+}`
+                    },
+                    {
+                        title: "Prime Number Checker",
+                        text: "Write a C function that checks if a given number is prime. Return 1 if prime, 0 if not prime.",
+                        template: `#include <stdio.h>
+
+int isPrime(int number) {
+    
+}
+
+int main() {
+    int testNumber = 17;
+    int result = isPrime(testNumber);
+    printf("%d is prime: %s\\n", testNumber, result ? "Yes" : "No");
+    return 0;
+}`
+                    },
+                    {
+                        title: "Factorial Calculator",
+                        text: "Write a C function that calculates the factorial of a given number using recursion.",
+                        template: `#include <stdio.h>
+
+long factorial(int n) {
+    
+}
+
+int main() {
+    int number = 5;
+    long result = factorial(number);
+    printf("Factorial of %d is: %ld\\n", number, result);
+    return 0;
+}`
+                    },
+                    {
+                        title: "Array Maximum Finder",
+                        text: "Write a C function that finds the maximum element in an array of integers.",
+                        template: `#include <stdio.h>
+
+int findMaximum(int arr[], int size) {
+    
+}
+
+int main() {
+    int numbers[] = {3, 7, 2, 9, 1, 8, 5};
+    int size = sizeof(numbers) / sizeof(numbers[0]);
+    int max = findMaximum(numbers, size);
+    printf("Maximum element: %d\\n", max);
+    return 0;
+}`
+                    },
+                    {
+                        title: "Palindrome Checker",
+                        text: "Write a C function that checks if a given string is a palindrome, ignoring case and spaces. Return 1 if palindrome, 0 if not.",
+                        template: `#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int isPalindrome(char text[]) {
+    
+}
+
+int main() {
+    char test[] = "A man a plan a canal Panama";
+    int result = isPalindrome(test);
+    printf("'%s' is palindrome: %s\\n", test, result ? "Yes" : "No");
+    return 0;
+}`
+                    }
+                ]
+            },
+            cpp: {
+                questions: [
+                    {
+                        title: "Vector Sum Calculator",
+                        text: "Write a C++ function that takes a vector of integers and returns the sum of all even numbers using iterators.",
+                        template: `#include <iostream>
+#include <vector>
+using namespace std;
+
+int sumEvenNumbers(const vector<int>& numbers) {
+    
+}
+
+int main() {
+    vector<int> testVector = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int result = sumEvenNumbers(testVector);
+    cout << "Sum of even numbers: " << result << endl;
+    return 0;
+}`
+                    },
+                    {
+                        title: "String Reverser Class",
+                        text: "Create a C++ class StringReverser with a method that reverses a given string without using built-in reverse functions.",
+                        template: `#include <iostream>
+#include <string>
+using namespace std;
+
+class StringReverser {
+public:
+    string reverseString(const string& input) {
+        
+    }
+};
+
+int main() {
+    StringReverser reverser;
+    string test = "Hello World";
+    string result = reverser.reverseString(test);
+    cout << "Original: " << test << endl;
+    cout << "Reversed: " << result << endl;
+    return 0;
+}`
+                    },
+                    {
+                        title: "Prime Number Class",
+                        text: "Create a C++ class PrimeChecker with a method that checks if a given number is prime.",
+                        template: `#include <iostream>
+using namespace std;
+
+class PrimeChecker {
+public:
+    bool isPrime(int number) {
+        
+    }
+};
+
+int main() {
+    PrimeChecker checker;
+    int testNumber = 17;
+    bool result = checker.isPrime(testNumber);
+    cout << testNumber << " is prime: " << (result ? "Yes" : "No") << endl;
+    return 0;
+}`
+                    },
+                    {
+                        title: "Factorial Calculator Class",
+                        text: "Create a C++ class with a recursive method to calculate the factorial of a given number.",
+                        template: `#include <iostream>
+using namespace std;
+
+class FactorialCalculator {
+public:
+    long factorial(int n) {
+        
+    }
+};
+
+int main() {
+    FactorialCalculator calc;
+    int number = 5;
+    long result = calc.factorial(number);
+    cout << "Factorial of " << number << " is: " << result << endl;
+    return 0;
+}`
+                    },
+                    {
+                        title: "Vector Maximum Finder",
+                        text: "Write a C++ function template that finds the maximum element in a vector of any comparable type.",
+                        template: `#include <iostream>
+#include <vector>
+using namespace std;
+
+template<typename T>
+T findMaximum(const vector<T>& vec) {
+    
+}
+
+int main() {
+    vector<int> numbers = {3, 7, 2, 9, 1, 8, 5};
+    int max = findMaximum(numbers);
+    cout << "Maximum element: " << max << endl;
+    return 0;
+}`
+                    },
+                    {
+                        title: "Palindrome Checker Class",
+                        text: "Create a C++ class with a method that checks if a given string is a palindrome, ignoring case and spaces.",
+                        template: `#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+class PalindromeChecker {
+public:
+    bool isPalindrome(const string& text) {
+        
+    }
+};
+
+int main() {
+    PalindromeChecker checker;
+    string test = "A man a plan a canal Panama";
+    bool result = checker.isPalindrome(test);
+    cout << "'" << test << "' is palindrome: " << (result ? "Yes" : "No") << endl;
+    return 0;
+}`
+                    }
+                ]
+            }
+        };
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('cancelBtn').addEventListener('click', closeFamiliarityModal);
+        document.getElementById('familiarityForm').addEventListener('submit', handleFamiliaritySubmit);
+        document.getElementById('startQuizBtn').addEventListener('click', startQuiz);
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+        document.getElementById('endTestBtn').addEventListener('click', endTest);
+        document.getElementById('retakeQuizBtn').addEventListener('click', retakeQuiz);
+        document.getElementById('closeResultsBtn').addEventListener('click', closeResults);
+        document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+        document.getElementById('toastClose').addEventListener('click', hideToast);
+
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('click', function() {
+                selectedLanguage = this.dataset.lang;
+                document.getElementById('selectedLanguage').textContent = 
+                    selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1);
+                showFamiliarityModal();
+            });
+        });
+
+        const codeEditor = document.getElementById('codeEditor');
+        const mcqCodeEditor = document.getElementById('mcqCodeEditor');
+        
+        [codeEditor, mcqCodeEditor].forEach(editor => {
+            editor.addEventListener('input', (e) => updateLineNumbers(e.target));
+            editor.addEventListener('scroll', (e) => syncScroll(e.target));
+            editor.addEventListener('keydown', (e) => handleKeyDown(e));
+        });
+
+        function showWelcomeToast(username) {
+            const toast = document.getElementById('toastNotification');
+            const message = document.getElementById('toastMessage');
+            message.textContent = `WELCOME ${username.toUpperCase()}!`;
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toastNotification');
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleEnterKey(e.target);
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                handleTabKey(e.target);
+            }
+        }
+
+        function handleEnterKey(textarea) {
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+            
+            const lines = textBefore.split('\n');
+            const currentLine = lines[lines.length - 1];
+            
+            let indentation = '';
+            for (let char of currentLine) {
+                if (char === ' ' || char === '\t') {
+                    indentation += char;
+                } else {
+                    break;
+                }
+            }
+            
+            const needsExtraIndent = ['java', 'c', 'cpp'].includes(selectedLanguage) && 
+                                   (currentLine.trim().endsWith('{') || 
+                                    currentLine.trim().endsWith('(') ||
+                                    /\b(if|for|while|else|do|switch|try|catch|finally|class|public|private|protected)\s*.*\s*$/.test(currentLine.trim()));
+            
+            if (needsExtraIndent) {
+                indentation += '    ';
+            }
+            
+            const nextLineMatch = textAfter.match(/^\s*[}\)]/);
+            let newText = textBefore + '\n' + indentation;
+            
+            if (nextLineMatch && needsExtraIndent) {
+                newText += '\n' + currentLine.match(/^\s*/)[0];
+            }
+            
+            newText += textAfter;
+            
+            textarea.value = newText;
+            
+            const newCursorPos = cursorPos + 1 + indentation.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+            
+            updateLineNumbers(textarea);
+        }
+
+        function handleTabKey(textarea) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            
+            const spaces = '    ';
+            textarea.value = textarea.value.substring(0, start) + spaces + textarea.value.substring(end);
+            textarea.setSelectionRange(start + spaces.length, start + spaces.length);
+            
+            updateLineNumbers(textarea);
+        }
+
+        function updateLineNumbers(textarea) {
+            const lineNumbersId = textarea.id === 'codeEditor' ? 'lineNumbers' : 'mcqLineNumbers';
+            const lineNumbers = document.getElementById(lineNumbersId);
+            const lines = textarea.value.split('\n');
+            
+            let lineNumbersHtml = '';
+            for (let i = 1; i <= lines.length; i++) {
+                lineNumbersHtml += i + '\n';
+            }
+            
+            lineNumbers.textContent = lineNumbersHtml.trim();
+            
+            const textareaStyle = window.getComputedStyle(textarea);
+            lineNumbers.style.paddingTop = textareaStyle.paddingTop;
+            lineNumbers.style.paddingBottom = textareaStyle.paddingBottom;
+        }
+
+        function syncScroll(textarea) {
+            const lineNumbersId = textarea.id === 'codeEditor' ? 'lineNumbers' : 'mcqLineNumbers';
+            const lineNumbers = document.getElementById(lineNumbersId);
+            lineNumbers.scrollTop = textarea.scrollTop;
+        }
+
+        function showFamiliarityModal() {
+            const modal = document.getElementById('familiarityModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('show');
+        }
+
+        function closeFamiliarityModal() {
+            const modal = document.getElementById('familiarityModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('show');
+        }
+
+        function handleFamiliaritySubmit(e) {
+            e.preventDefault();
+            selectedLevel = document.querySelector('input[name="familiarity"]:checked').value;
+            closeFamiliarityModal();
+            showQuizDetails();
+        }
+
+        function showQuizDetails() {
+            document.getElementById('quizLanguage').textContent = 
+                selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1);
+            document.getElementById('quizLevel').textContent = 
+                selectedLevel.charAt(0).toUpperCase() + selectedLevel.slice(1);
+            
+            const overlay = document.getElementById('quizDetailsOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('show');
+        }
+
+        function startQuiz() {
+            document.getElementById('quizDetailsOverlay').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            startTime = Date.now();
+            startTimer();
+            loadQuestion();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function loadQuestion() {
+            const totalQuestions = 6;
+            document.getElementById('questionCounter').textContent = 
+                `Question ${currentQuestion + 1} of ${totalQuestions}`;
+            
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            document.getElementById('codingQuestion').classList.add('hidden');
+            document.getElementById('mcqQuestion').classList.add('hidden');
+
+            const question = languageData[selectedLanguage].questions[currentQuestion];
+            
+            if (currentQuestion === 0) {
+                loadCodingQuestion(question);
+            } else {
+                loadMCQQuestion(question);
+            }
+
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = 
+                currentQuestion === 5 ? 'Finish' : 'Next';
+        }
+
+        function loadCodingQuestion(question) {
+            document.getElementById('codingQuestion').classList.remove('hidden');
+            document.getElementById('codingQuestionTitle').textContent = question.title;
+            document.getElementById('codingQuestionText').textContent = question.text;
+            document.getElementById('languageName').textContent = 
+                selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1);
+            
+            if (!answers[currentQuestion]) {
+                codeEditor.value = question.template;
+                updateLineNumbers(codeEditor);
+            } else {
+                codeEditor.value = answers[currentQuestion];
+                updateLineNumbers(codeEditor);
+            }
+        }
+
+        function loadMCQQuestion(question) {
+            document.getElementById('mcqQuestion').classList.remove('hidden');
+            document.getElementById('mcqQuestionTitle').textContent = question.title;
+            document.getElementById('mcqQuestionText').textContent = question.text;
+            document.getElementById('mcqLanguageName').textContent = 
+                selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1);
+            
+            if (!answers[currentQuestion]) {
+                mcqCodeEditor.value = question.template;
+                updateLineNumbers(mcqCodeEditor);
+            } else {
+                mcqCodeEditor.value = answers[currentQuestion];
+                updateLineNumbers(mcqCodeEditor);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion === 0) {
+                answers[currentQuestion] = codeEditor.value;
+            } else {
+                answers[currentQuestion] = mcqCodeEditor.value;
+            }
+            
+            if (currentQuestion < 5) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                endTest();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                if (currentQuestion === 0) {
+                    answers[currentQuestion] = codeEditor.value;
+                } else {
+                    answers[currentQuestion] = mcqCodeEditor.value;
+                }
+                
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function endTest() {
+            clearInterval(timer);
+            
+            if (currentQuestion === 0) {
+                answers[currentQuestion] = codeEditor.value;
+            } else {
+                answers[currentQuestion] = mcqCodeEditor.value;
+            }
+            
+            calculateResults();
+            showResults();
+        }
+
+        function calculateResults() {
+            let totalScore = 0;
+            
+            for (let i = 0; i < 6; i++) {
+                const answer = answers[i] || '';
+                const hasReturn = answer.includes('return') || answer.includes('printf') || answer.includes('cout') || answer.includes('print');
+                const hasLogic = answer.length > 100;
+                const hasLoop = /\b(for|while|foreach)\b/.test(answer);
+                const hasCondition = /\b(if|else)\b/.test(answer);
+                
+                if (hasReturn && (hasLogic || hasLoop || hasCondition)) {
+                    totalScore++;
+                }
+            }
+            
+            const endTime = Date.now();
+            const timeTaken = Math.floor((endTime - startTime) / 1000);
+            const accuracy = Math.round((totalScore / 6) * 100);
+            
+            document.getElementById('finalScore').textContent = totalScore;
+            document.getElementById('codingScore').textContent = `${totalScore}/6`;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            document.getElementById('totalTime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+        }
+
+        function retakeQuiz() {
+            currentQuestion = 0;
+            answers = {};
+            timeLeft = 1200;
+            selectedLanguage = '';
+            selectedLevel = '';
+            
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function closeResults() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            currentQuestion = 0;
+            answers = {};
+            timeLeft = 1200;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

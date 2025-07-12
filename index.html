@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Neuron/Molecule Animated SVG Background (dynamic) -->
+  <svg class="neuron-bg" id="neuronBgSvg" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg"></svg>
+  <!-- Bubbles left and right -->
+  <svg id="bubblesLeft" style="position:fixed;left:-6px;top:0;width:120px;height:100vh;z-index:-1;pointer-events:none;"></svg>
+  <svg id="bubblesRight" style="position:fixed;right:10px;top:0;width:120px;height:100vh;z-index:-1;pointer-events:none;"></svg>
+
+    <div class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Quiz Master</h1>
+                <p>Test your knowledge with our interactive quiz</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container">
+                <h2>Login</h2>
+                <form id="loginFormElement">
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder="Password" required
+                            autocomplete="new-password">
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility"
+                            data-target="loginPassword">Show</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <p class="switch-form">
+                    Don't have an account? <a href="#" id="showSignup">Sign up</a>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="form-container hidden">
+                <h2>Sign Up</h2>
+                <form id="signupFormElement">
+                    <div class="input-group">
+                        <input type="text" id="signupName" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="signupEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="signupPassword" placeholder="Password" required
+                            autocomplete="new-password">
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility"
+                            data-target="signupPassword">Show</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </form>
+                <p class="switch-form">
+                    Already have an account? <a href="#" id="showLogin">Login</a>
+                </p>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Bubbles animation on left and right
+        (function() {
+            function createBubbles(svg, xRange) {
+                const bubbleCount = 12;
+                const bubbles = [];
+                for (let i = 0; i < bubbleCount; i++) {
+                    const r = 8 + Math.random() * 10;
+                    const x = xRange[0] + Math.random() * (xRange[1] - xRange[0]);
+                    const y = Math.random() * window.innerHeight;
+                    const speed = 0.4 + Math.random() * 0.7;
+                    // Use only white, purple, and black colors
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('cx', x);
+                    circle.setAttribute('cy', y);
+                    circle.setAttribute('r', r);
+                    circle.setAttribute('fill', 'none');
+                    circle.setAttribute('stroke', '#fff');
+                    circle.setAttribute('stroke-width', '2');
+                    circle.setAttribute('opacity', '0.85');
+                    svg.appendChild(circle);
+                    bubbles.push({circle, x, y, r, speed});
+                }
+                function animateBubbles() {
+                    for (const b of bubbles) {
+                        b.y -= b.speed;
+                        if (b.y < -b.r) {
+                            b.y = window.innerHeight + b.r;
+                            b.x = xRange[0] + Math.random() * (xRange[1] - xRange[0]);
+                            b.circle.setAttribute('cx', b.x);
+                        }
+                        b.circle.setAttribute('cy', b.y);
+                    }
+                    requestAnimationFrame(animateBubbles);
+                }
+                animateBubbles();
+            }
+            const leftSvg = document.getElementById('bubblesLeft');
+            const rightSvg = document.getElementById('bubblesRight');
+            leftSvg.setAttribute('width', 120);
+            leftSvg.setAttribute('height', window.innerHeight);
+            rightSvg.setAttribute('width', 120);
+            rightSvg.setAttribute('height', window.innerHeight);
+            createBubbles(leftSvg, [5, 65]); // x-range unchanged for now
+            createBubbles(rightSvg, [50, 115]);
+            window.addEventListener('resize', () => {
+                leftSvg.setAttribute('height', window.innerHeight);
+                rightSvg.setAttribute('height', window.innerHeight);
+            });
+        })();
+
+        // Check if user is already logged in
+        if (localStorage.getItem('currentUser')) {
+            window.location.href = 'quiz.html';
+        }
+        // Form switching
+        document.getElementById('showSignup').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.remove('hidden');
+        });
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        });
+        // Signup functionality
+        document.getElementById('signupFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            // Get existing users or create empty array
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            // Check if user already exists
+            if (users.find(user => user.email === email)) {
+                showMessage('User already exists with this email!', 'error');
+                return;
+            }
+            // Add new user
+            users.push({
+                name,
+                email,
+                password
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            showMessage('Account created successfully! Please login.', 'success');
+            // Switch to login form
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        });
+        // Login functionality
+        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            // Find matching user
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                // Store current user
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                showMessage('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'quiz.html';
+                }, 1000);
+            } else {
+                showMessage('Invalid email or password!', 'error');
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+    <script>
+        // Password show/hide toggle functionality
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    button.textContent = 'Hide';
+                } else {
+                    input.type = 'password';
+                    button.textContent = 'Show';
+                }
+            });
+        });
+        document.querySelector('input[type="password"]').addEventListener('focus', function() {
+            this.setAttribute('autocomplete', 'new-password');
+        });
+    </script>
+    
+</body>
+</html>
